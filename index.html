@@ -9,6 +9,7 @@
     <meta property="og:description" content="" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
@@ -338,17 +339,22 @@
         <form class="contact-form" id="contact-form">
           <div class="form-group">
             <label class="form-label" for="contact-email">Your Email <span class="required-star">*</span></label>
-            <input type="email" id="contact-email" name="email" class="form-input" placeholder="your.email@example.com" required autocomplete="email" />
+            <input type="email" id="contact-email" name="email" class="form-input" placeholder="your.email@example.com" maxlength="254" required autocomplete="email" />
           </div>
 
           <div class="form-group">
             <label class="form-label" for="contact-handle">Your Name / Handle</label>
-            <input type="text" id="contact-handle" name="handle" class="form-input" placeholder="Name or channel handle (optional)" autocomplete="name" />
+            <input type="text" id="contact-handle" name="handle" class="form-input" placeholder="Name or channel handle (optional)" maxlength="120" autocomplete="name" />
           </div>
 
           <div class="form-group">
             <label class="form-label" for="contact-message">What do you need? <span class="required-star">*</span></label>
-            <textarea id="contact-message" name="message" class="form-textarea" placeholder="Tell me what you need: a custom Minecraft thumbnail or video editing, plus any style or deadline details..." required rows="3"></textarea>
+            <textarea id="contact-message" name="message" class="form-textarea" placeholder="Tell me what you need: a custom Minecraft thumbnail or video editing, plus any style or deadline details..." maxlength="5000" required rows="3"></textarea>
+          </div>
+
+          <div class="form-honeypot" aria-hidden="true">
+            <label for="contact-website">Leave this field empty</label>
+            <input type="text" id="contact-website" name="website" tabindex="-1" autocomplete="off" />
           </div>
 
           <button type="submit" class="form-submit-btn" id="form-submit-btn">
@@ -359,6 +365,7 @@
             </svg>
           </button>
         </form>
+        <p class="contact-form-status" id="contact-form-status" role="alert" aria-live="assertive" hidden></p>
 
         <div class="form-success-state" id="form-success-state" hidden>
           <div class="success-icon-wrap">
@@ -367,11 +374,12 @@
             </svg>
           </div>
           <h4>Message Sent!</h4>
-          <p>Opening your email draft to <strong>hundredrackies@gmail.com</strong>. I'll get back to you shortly!</p>
+          <p>Your message has been sent to <strong>hundredrackies@gmail.com</strong>. I'll get back to you shortly!</p>
           <button type="button" class="success-done-btn" id="success-done-btn">Done</button>
         </div>
       </div>
     </div>
+    <script src="./config.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>

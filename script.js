@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalCloseBtn = document.getElementById('modal-close-btn');
   const contactForm = document.getElementById('contact-form');
   const formSuccessState = document.getElementById('form-success-state');
+  const contactFormStatus = document.getElementById('contact-form-status');
   const successDoneBtn = document.getElementById('success-done-btn');
   let isModalAnimating = false;
 
@@ -152,6 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formSuccessState && contactForm) {
       formSuccessState.hidden = true;
       contactForm.style.display = 'flex';
+    }
+    if (contactFormStatus) {
+      contactFormStatus.hidden = true;
+      contactFormStatus.textContent = '';
     }
 
     setTimeout(() => {
@@ -175,6 +180,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (formSuccessState && contactForm) {
         formSuccessState.hidden = true;
         contactForm.style.display = 'flex';
+      }
+      if (contactFormStatus) {
+        contactFormStatus.hidden = true;
+        contactFormStatus.textContent = '';
       }
     }, 350);
   }
@@ -209,30 +218,58 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('contact-email')?.value || '';
-      const handle = document.getElementById('contact-handle')?.value || '';
-      const message = document.getElementById('contact-message')?.value || '';
+      const email = document.getElementById('contact-email')?.value.trim() || '';
+      const handle = document.getElementById('contact-handle')?.value.trim() || '';
+      const message = document.getElementById('contact-message')?.value.trim() || '';
+      const website = document.getElementById('contact-website')?.value.trim() || '';
+      const submitButton = document.getElementById('form-submit-btn');
+      const buttonLabel = submitButton?.querySelector('span');
+      const originalButtonLabel = buttonLabel?.textContent || 'Send Message';
 
-      const subject = encodeURIComponent(`Project Inquiry from ${handle || email}`);
-      const body = encodeURIComponent(
-        `Email: ${email}\nName/Handle: ${handle || 'N/A'}\n\nProject Details:\n${message}`
-      );
-
-      // Copy email to clipboard as backup
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText('hundredrackies@gmail.com').catch(() => {});
+      if (contactFormStatus) {
+        contactFormStatus.hidden = true;
+        contactFormStatus.textContent = '';
       }
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.setAttribute('aria-busy', 'true');
+      }
+      if (buttonLabel) buttonLabel.textContent = 'Sending...';
 
-      // Launch email client
-      window.location.href = `mailto:hundredrackies@gmail.com?subject=${subject}&body=${body}`;
+      try {
+        const configuredBaseUrl = window.JZE_SITE_CONFIG?.apiBaseUrl;
+        const apiBaseUrl = typeof configuredBaseUrl === 'string'
+          ? configuredBaseUrl.trim().replace(/\/+$/, '')
+          : '';
+        const response = await fetch(`${apiBaseUrl}/api/contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name: handle, message, website }),
+        });
+        const result = await response.json().catch(() => null);
 
-      // Show smooth in-modal success confirmation
-      if (contactForm && formSuccessState) {
+        if (!response.ok || result?.ok !== true) {
+          throw new Error(response.status === 429 ? 'rate-limit' : 'send-failed');
+        }
+
+        contactForm.reset();
         contactForm.style.display = 'none';
-        formSuccessState.hidden = false;
-        showToast('Inquiry prepared & hundredrackies@gmail.com copied');
+        if (formSuccessState) formSuccessState.hidden = false;
+      } catch (error) {
+        if (contactFormStatus) {
+          contactFormStatus.textContent = error instanceof Error && error.message === 'rate-limit'
+            ? 'You have sent a few messages recently. Please wait a little and try again.'
+            : 'We could not send your message. Please try again in a moment.';
+          contactFormStatus.hidden = false;
+        }
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.removeAttribute('aria-busy');
+        }
+        if (buttonLabel) buttonLabel.textContent = originalButtonLabel;
       }
     });
   }

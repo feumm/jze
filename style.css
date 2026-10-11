@@ -1065,10 +1065,10 @@ body::-webkit-scrollbar {
 .form-input,
 .form-textarea {
   width: 100%;
-  background: rgba(0, 0, 0, 0.38);
+  background: rgba(0, 0, 0, 0.42);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.13);
   outline: none;
   border-radius: 14px;
   padding: 13px 16px;
@@ -1081,15 +1081,35 @@ body::-webkit-scrollbar {
 
 .form-input::placeholder,
 .form-textarea::placeholder {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.52);
 }
 
 .form-input:focus,
 .form-textarea:focus {
-  border: none;
-  outline: none;
+  border-color: rgba(255, 255, 255, 0.48);
+  outline: 2px solid rgba(255, 255, 255, 0.12);
+  outline-offset: 1px;
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
   background: rgba(0, 0, 0, 0.5);
+}
+
+.form-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.contact-form-status {
+  margin: 12px 0 0;
+  padding: 11px 14px;
+  border: 1px solid rgba(255, 115, 115, 0.3);
+  border-radius: 12px;
+  background: rgba(140, 25, 25, 0.18);
+  color: #ffd1d1;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .form-textarea {
@@ -1136,6 +1156,12 @@ body::-webkit-scrollbar {
 .form-submit-btn:active {
   transform: translateY(0);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.form-submit-btn:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
 }
 
 .form-submit-btn:hover .send-icon {
